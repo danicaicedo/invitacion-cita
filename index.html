@@ -230,15 +230,15 @@
 <!-- PANTALLA 2: LA PREGUNTA -->
 <section id="screen-letter" class="screen">
     <div class="letter" id="letterCard">
-        <span class="corner tl">🌹</span><span class="corner tr">🌹</span>
+        <span class="corner tl">🌹</span><span class="corner tr"></span>
         <span class="corner bl">🌹</span><span class="corner br">🌹</span>
         <div class="script">Una invitación muy especial</div>
         <h1 class="title">¿Quieres salir conmigo?</h1>
         <p class="subtitle">Me sería muy grato contar con su compañía<br>en una velada inolvidable.</p>
-        <div class="divider">❦ 🌹 ❦</div>
+        <div class="divider">❦ 🌹 </div>
         <div class="actions">
             <button class="btn btn-yes" id="yesBtn" onclick="acceptDate()">Sí, acepto 💖</button>
-            <button class="btn btn-no" id="noBtn">No 😢</button>
+            <button class="btn btn-no" id="noBtn">No </button>
         </div>
     </div>
 </section>
@@ -269,12 +269,12 @@
 <!-- PANTALLA 4: CONFIRMACIÓN -->
 <section id="screen-final" class="screen">
     <div class="letter">
-        <span class="corner tl">🌹</span><span class="corner tr">🌹</span>
+        <span class="corner tl"></span><span class="corner tr"></span>
         <span class="corner bl">🌹</span><span class="corner br">🌹</span>
         <div class="script">¡Ha dicho que sí!</div>
         <h2 class="title">Nuestra cita 💑</h2>
         <div class="plan-box">
-            <p><strong>📅 Fecha:</strong> <span id="finalDate"></span></p>
+            <p><strong> Fecha:</strong> <span id="finalDate"></span></p>
             <p><strong>🕐 Hora:</strong> <span id="finalTime"></span></p>
             <p><strong>📍 Lugar:</strong> Sorpresa… confía en mí 🤫</p>
             <p><strong>👗 Vestimenta:</strong> Elegante ✨</p>
@@ -316,7 +316,7 @@
         'Ese botón no funciona 😌',
         'El sí es más bonito 👉💖',
         'Mi corazón ya dijo sí por ti 💘',
-        'No existe el "no" hoy 😏',
+        'No existe el "no" hoy ',
         '¡Dale que siii! 💖'
     ];
     let clicksNo = 0;
@@ -407,7 +407,7 @@
     emailjs.init({ publicKey: "YfjPK-dEfMkZraBlP" });
 
     function notifyOwner(fecha, hora) {
-        emailjs.send("service_lz5l2dw", "rhs9evq", {
+        emailjs.send("service_lz5l2dw", "template_6jswdxm", {
             fecha_elegida: fecha,
             hora_elegida: hora,
             fecha_respuesta: new Date().toLocaleString()
