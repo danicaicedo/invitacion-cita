@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Una invitación para ti 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Cormorant Garamond', serif;
+        background: linear-gradient(160deg, #f9ece4, #f3d9dd 60%, #eec9d2);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .screen {
+        display: none;
+        min-height: 100vh;
+        padding: 40px 16px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .screen.active { display: flex; animation: fadeIn .6s ease; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .script {
+        font-family: 'Great Vibes', cursive;
+        color: #b7455d;
+        font-size: 1.9rem;
+    }
+
+    /* ---------- SOBRE ---------- */
+    .envelope {
+        position: relative;
+        width: min(430px, 88vw);
+        height: 280px;
+        cursor: pointer;
+        perspective: 900px;
+    }
+    .env-back {
+        position: absolute; inset: 0;
+        background-color: #f4c9d3;
+        background-image: radial-gradient(#ffffff99 3px, transparent 3.5px);
+        background-size: 34px 34px;
+        border-radius: 14px;
+        box-shadow: 0 25px 60px rgba(90,40,50,.3);
+    }
+    .env-letter {
+        position: absolute; left: 6%; width: 88%; top: 10%; height: 86%;
+        background: #fdf9f2; border-radius: 10px; z-index: 2;
+        display: flex; justify-content: center; padding-top: 16px;
+        font-size: 2rem; color: #d4566a;
+        box-shadow: 0 -6px 24px rgba(0,0,0,.08);
+        transition: transform .7s ease .3s;
+    }
+    .flap {
+        position: absolute; top: 0; left: 0; width: 100%; height: 58%;
+        background-color: #efb9c6;
+        background-image: radial-gradient(#ffffff77 3px, transparent 3.5px);
+        background-size: 34px 34px;
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        z-index: 3; transform-origin: top center;
+        transition: transform .6s ease;
+        border-radius: 14px 14px 0 0;
+    }
+    .pocket {
+        position: absolute; bottom: 0; left: 0; width: 100%; height: 64%;
+        background-color: #f4c9d3;
+        background-image: radial-gradient(#ffffff99 3px, transparent 3.5px);
+        background-size: 34px 34px;
+        clip-path: polygon(0 0, 50% 42%, 100% 0, 100% 100%, 0 100%);
+        z-index: 4; border-radius: 0 0 14px 14px;
+    }
+    .seal {
+        position: absolute; top: 52%; left: 50%;
+        width: 64px; height: 64px;
+        transform: translate(-50%,-50%);
+        background: radial-gradient(circle at 35% 30%, #d4566a, #8e2f3c 70%);
+        border-radius: 50%; z-index: 5;
+        display: flex; align-items: center; justify-content: center;
+        color: #f8d8da; font-size: 1.6rem;
+        box-shadow: 0 4px 14px rgba(0,0,0,.25);
+        transition: opacity .4s, transform .4s;
+    }
+    .rose {
+        position: absolute; font-size: 2.6rem; z-index: 6;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,.25));
+    }
+    .envelope.open .flap { transform: rotateX(180deg); z-index: 1; }
+    .envelope.open .env-letter { transform: translateY(-72%); }
+    .envelope.open .seal { opacity: 0; transform: translate(-50%,-50%) scale(1.5); }
+
+    .env-caption { margin-top: 30px; text-align: center; }
+    .env-hint { color: #9a7a80; font-size: 1rem; font-style: italic; }
+
+    /* ---------- CARTA ---------- */
+    .letter {
+        position: relative;
+        background: #fdf9f2;
+        width: min(520px, 92vw);
+        padding: 50px 36px 42px;
+        border-radius: 6px;
+        box-shadow: 0 25px 60px rgba(90,40,50,.25);
+        text-align: center;
+    }
+    .letter::before {
+        content: ''; position: absolute; inset: 10px;
+        border: 1px solid #d9b98c; border-radius: 4px; pointer-events: none;
+    }
+    .letter::after {
+        content: ''; position: absolute; inset: 15px;
+        border: 2px double rgba(201,162,39,.4); border-radius: 3px; pointer-events: none;
+    }
+    .corner { position: absolute; font-size: 1.5rem; z-index: 2; }
+    .corner.tl { top: 4px;  left: 8px;  transform: rotate(-30deg); }
+    .corner.tr { top: 4px;  right: 8px; transform: rotate(30deg); }
+    .corner.bl { bottom: 4px; left: 8px;  transform: rotate(-150deg); }
+    .corner.br { bottom: 4px; right: 8px; transform: rotate(150deg); }
+
+    .title {
+        font-size: clamp(1.8rem, 5vw, 2.5rem);
+        font-weight: 600; color: #5a3a41;
+        margin: 12px 0 8px; letter-spacing: .5px;
+    }
+    .subtitle { font-size: 1.2rem; font-style: italic; color: #7a6266; }
+    .divider { margin: 14px 0; font-size: 1.2rem; color: #b7455d; letter-spacing: 8px; }
+
+    .actions {
+        display: flex; gap: 18px; justify-content: center;
+        margin-top: 26px; min-height: 60px; flex-wrap: wrap;
+    }
+    .btn {
+        font-family: inherit; font-size: 1.15rem;
+        padding: 12px 34px; border-radius: 999px;
+        cursor: pointer; letter-spacing: .5px;
+        transition: transform .25s, box-shadow .25s, background .25s;
+    }
+    .btn-yes {
+        background: #8e2f3c; color: #fdf6ec;
+        border: 1px solid #6d2230;
+        box-shadow: 0 6px 18px rgba(142,47,60,.35);
+    }
+    .btn-yes:hover { box-shadow: 0 10px 26px rgba(142,47,60,.5); }
+    .btn-no {
+        background: transparent; color: #8a7a7a;
+        border: 1px solid #c9b8b8;
+    }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* ---------- CALENDARIO ---------- */
+    .weekdays, .days {
+        display: grid; grid-template-columns: repeat(7, 1fr);
+        gap: 6px; justify-items: center; margin-top: 10px;
+    }
+    .weekdays span {
+        font-size: .85rem; color: #9a8686;
+        letter-spacing: 1px; text-transform: uppercase;
+    }
+    .day {
+        width: 44px; height: 44px; border-radius: 50%;
+        border: 1px solid transparent; background: transparent;
+        font-family: inherit; font-size: 1.05rem; color: #5a4a4a;
+        cursor: pointer; transition: .2s;
+    }
+    .day:hover:not(:disabled) { background: #f6dce2; }
+    .day.selected {
+        background: #8e2f3c; color: #fff;
+        box-shadow: 0 4px 12px rgba(142,47,60,.4);
+    }
+    .day:disabled { color: #d5c8c8; cursor: not-allowed; opacity: .5; }
+    .day.empty { visibility: hidden; }
+
+    .time-row { margin-top: 22px; font-size: 1.15rem; color: #5a3a41; }
+    select {
+        font-family: inherit; font-size: 1.1rem;
+        padding: 10px 20px; border-radius: 999px;
+        border: 1px solid rgba(201,162,39,.6);
+        background: #fffdf8; color: #5a3a41; margin-left: 10px;
+    }
+    .confirm-row { margin-top: 26px; }
+
+    /* ---------- FINAL ---------- */
+    .plan-box {
+        margin: 18px auto 0; padding: 20px 26px;
+        border: 1px solid #d9b98c; border-radius: 6px;
+        background: #fffdf8; font-size: 1.25rem; color: #5a3a41;
+    }
+    .plan-box p { margin: 8px 0; }
+    .final-note { margin-top: 18px; font-size: 1.6rem; }
+
+    /* ---------- CORAZONES FLOTANTES ---------- */
+    .hearts {
+        position: fixed; font-size: 2em; pointer-events: none;
+        animation: float 3s ease-in forwards; z-index: 99;
+    }
+    @keyframes float {
+        to { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+    }
+</style>
+</head>
+<body>
+
+<!-- PANTALLA 1: SOBRE -->
+<section id="screen-envelope" class="screen active">
+    <div class="envelope" id="envelope" onclick="openEnvelope()">
+        <div class="env-back"></div>
+        <div class="env-letter">♥</div>
+        <div class="flap"></div>
+        <div class="pocket"></div>
+        <div class="seal">♥</div>
+        <span class="rose" style="left:-16px; top:32%; transform:rotate(-25deg);">🌹</span>
+        <span class="rose" style="left:26%; top:46%; transform:rotate(10deg);">🌹</span>
+        <span class="rose" style="left:52%; top:40%; transform:rotate(20deg);">🌹</span>
+        <span class="rose" style="left:38%; top:62%; transform:rotate(-8deg);">🌹</span>
+    </div>
+    <div class="env-caption">
+        <div class="script">Para ti…</div> <!-- ✏️ EDITA: el nombre si quieres -->
+        <div class="env-hint">(toca el sobre para abrir)</div>
+    </div>
+</section>
+
+<!-- PANTALLA 2: LA PREGUNTA -->
+<section id="screen-letter" class="screen">
+    <div class="letter" id="letterCard">
+        <span class="corner tl">🌹</span><span class="corner tr">🌹</span>
+        <span class="corner bl">🌹</span><span class="corner br">🌹</span>
+        <div class="script">Una invitación muy especial</div>
+        <h1 class="title">¿Quieres salir conmigo?</h1>
+        <p class="subtitle">Me sería muy grato contar con su compañía<br>en una velada inolvidable.</p>
+        <div class="divider">❦ 🌹 ❦</div>
+        <div class="actions">
+            <button class="btn btn-yes" id="yesBtn" onclick="acceptDate()">Sí, acepto 💖</button>
+            <button class="btn btn-no" id="noBtn">No 😢</button>
+        </div>
+    </div>
+</section>
+
+<!-- PANTALLA 3: CALENDARIO -->
+<section id="screen-calendar" class="screen">
+    <div class="letter">
+        <span class="corner tl">🌹</span><span class="corner tr">🌹</span>
+        <span class="corner bl">🌹</span><span class="corner br">🌹</span>
+        <div class="script">Elige el momento</div>
+        <h2 class="title" id="calTitle">Noviembre 2026</h2>
+        <div class="weekdays">
+            <span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span>
+        </div>
+        <div class="days" id="daysGrid"></div>
+        <div class="time-row">
+            🕐 Hora:
+            <select id="timeSelect">
+                <option value="">-- elegir --</option>
+            </select>
+        </div>
+        <div class="confirm-row">
+            <button class="btn btn-yes" id="confirmBtn" disabled onclick="confirmDate()">Confirmar cita 🌹</button>
+        </div>
+    </div>
+</section>
+
+<!-- PANTALLA 4: CONFIRMACIÓN -->
+<section id="screen-final" class="screen">
+    <div class="letter">
+        <span class="corner tl">🌹</span><span class="corner tr">🌹</span>
+        <span class="corner bl">🌹</span><span class="corner br">🌹</span>
+        <div class="script">¡Ha dicho que sí!</div>
+        <h2 class="title">Nuestra cita 💑</h2>
+        <div class="plan-box">
+            <p><strong>📅 Fecha:</strong> <span id="finalDate"></span></p>
+            <p><strong>🕐 Hora:</strong> <span id="finalTime"></span></p>
+            <p><strong>📍 Lugar:</strong> Sorpresa… confía en mí 🤫</p> <!-- ✏️ EDITA: el lugar -->
+            <p><strong>👗 Vestimenta:</strong> Elegante ✨</p> <!-- ✏️ EDITA: vestimenta -->
+        </div>
+        <div class="script final-note">Será una noche que no olvidarás…</div>
+    </div>
+</section>
+
+<script>
+    // ✏️ SI QUIERES OTRO MES/AÑO: cámbialo aquí (MES: 0=enero ... 10=noviembre)
+    const ANIO = 2026;
+    const MES = 10; // Noviembre
+
+    const weekdays = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    /* ----- SOBRE ----- */
+    function openEnvelope() {
+        const env = document.getElementById('envelope');
+        if (env.classList.contains('open')) return;
+        env.classList.add('open');
+        setTimeout(() => switchScreen('screen-letter'), 1400);
+    }
+
+    /* ----- BOTÓN "NO" QUE HUYE ----- */
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const letterCard = document.getElementById('letterCard');
+
+    const noTexts = [
+        'No 😢',
+        '¿Segura? 🥺',
+        '¿En serio? 😳',
+        '...',
+        'Piénsalo otra vez 😅',
+        'No te arrepentirás 🌹',
+        'Ese botón no funciona 😌',
+        'El sí es más bonito 👉💖',
+        'Mi corazón ya dijo sí por ti 💘',
+        'No existe el "no" hoy 😏',
+        '¡Dale que siii! 💖'
+    ];
+    let clicksNo = 0;
+
+    function moveNo() {
+        const r = letterCard.getBoundingClientRect();
+        const maxX = r.width / 2 - 70;
+        const maxY = r.height / 2 - 60;
+        const x = (Math.random() * 2 - 1) * maxX;
+        const y = (Math.random() * 2 - 1) * maxY;
+        noBtn.style.transform = `translate(${x}px, ${y}px)`;
+        yesBtn.style.transform = `scale(${Math.min(1 + clicksNo * 0.06, 1.5)})`;
+    }
+
+    function noClicked() {
+        clicksNo++;
+        noBtn.textContent = noTexts[Math.min(clicksNo, noTexts.length - 1)];
+        yesBtn.style.transform = `scale(${Math.min(1 + clicksNo * 0.06, 1.5)})`;
+        moveNo();
+    }
+
+    noBtn.addEventListener('mouseover', moveNo);
+
+    let lastTouch = 0;
+    noBtn.addEventListener('touchstart', () => {
+        lastTouch = Date.now();
+        noClicked();
+    }, { passive: true });
+
+    noBtn.addEventListener('click', e => {
+        if (Date.now() - lastTouch < 500) return;
+        noClicked();
+    });
+
+    /* ----- CALENDARIO (SOLO NOVIEMBRE) ----- */
+    let selectedDay = null;
+
+    function buildCalendar() {
+        const grid = document.getElementById('daysGrid');
+        document.getElementById('calTitle').textContent =
+            months[MES].charAt(0).toUpperCase() + months[MES].slice(1) + ' ' + ANIO;
+        grid.innerHTML = '';
+        const firstDay = new Date(ANIO, MES, 1).getDay();
+        const daysInMonth = new Date(ANIO, MES + 1, 0).getDate();
+        const today = new Date(); today.setHours(0,0,0,0);
+
+        for (let i = 0; i < firstDay; i++) {
+            const empty = document.createElement('span');
+            empty.className = 'day empty';
+            grid.appendChild(empty);
+        }
+        for (let d = 1; d <= daysInMonth; d++) {
+            const btn = document.createElement('button');
+            btn.className = 'day';
+            btn.textContent = d;
+            if (new Date(ANIO, MES, d) < today) btn.disabled = true;
+            btn.onclick = () => {
+                document.querySelectorAll('.day.selected').forEach(x => x.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedDay = d;
+                checkReady();
+            };
+            grid.appendChild(btn);
+        }
+    }
+
+    function buildTimes() {
+        const sel = document.getElementById('timeSelect');
+        for (let h = 12; h <= 22; h++) {
+            ['00','30'].forEach(m => {
+                if (h === 22 && m === '30') return;
+                const hh = (h % 12 === 0) ? 12 : h % 12;
+                const ampm = h < 12 ? 'AM' : 'PM';
+                const opt = document.createElement('option');
+                opt.value = `${hh}:${m} ${ampm}`;
+                opt.textContent = `${hh}:${m} ${ampm}`;
+                sel.appendChild(opt);
+            });
+        }
+        sel.onchange = checkReady;
+    }
+
+    function checkReady() {
+        document.getElementById('confirmBtn').disabled =
+            !(selectedDay && document.getElementById('timeSelect').value);
+    }
+
+    /* ----- NOTIFICACIÓN A TU CORREO (SILENCIOSA) ----- */
+    function notifyOwner(fecha, hora) {
+        const TU_CORREO = "danielhumbertocaicedoarguello@gmail.com"; 
+        fetch("https://formsubmit.co/ajax/" + TU_CORREO, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({
+                _subject: "💌 ¡Respondió la invitación!",
+                Respuesta: "¡Dijo que SÍ! 🎉",
+                Fecha_elegida: fecha,
+                Hora_elegida: hora,
+                Enviado_el: new Date().toLocaleString()
+            })
+        }).catch(e => console.log("No se pudo enviar la notificación:", e));
+    }
+
+    /* ----- FLUJO ----- */
+    function acceptDate() {
+        buildCalendar();
+        buildTimes();
+        switchScreen('screen-calendar');
+    }
+
+    function confirmDate() {
+        const d = new Date(ANIO, MES, selectedDay);
+        const wd = weekdays[d.getDay()];
+        const fecha = wd.charAt(0).toUpperCase() + wd.slice(1) +
+            ', ' + selectedDay + ' de ' + months[MES] + ' de ' + ANIO;
+        const hora = document.getElementById('timeSelect').value;
+        document.getElementById('finalDate').textContent = fecha;
+        document.getElementById('finalTime').textContent = hora;
+        switchScreen('screen-final');
+        createHearts();
+        notifyOwner(fecha, hora); // 📧 te avisa a ti en silencio
+    }
+
+    function createHearts() {
+        const items = ['','💖','','💕','🌹'];
+        for (let i = 0; i < 25; i++) {
+            setTimeout(() => {
+                const el = document.createElement('div');
+                el.className = 'hearts';
+                el.textContent = items[Math.floor(Math.random() * items.length)];
+                el.style.left = Math.random() * 100 + '%';
+                el.style.bottom = '0';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 3000);
+            }, i * 120);
+        }
+    }
+</script>
+</body>
+</html>
