@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Una invitación para ti 💌</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -221,7 +222,7 @@
         <span class="rose" style="left:38%; top:62%; transform:rotate(-8deg);">🌹</span>
     </div>
     <div class="env-caption">
-        <div class="script">Para ti…</div> <!-- ✏️ EDITA: el nombre si quieres -->
+        <div class="script">Para ti…</div>
         <div class="env-hint">(toca el sobre para abrir)</div>
     </div>
 </section>
@@ -275,17 +276,16 @@
         <div class="plan-box">
             <p><strong>📅 Fecha:</strong> <span id="finalDate"></span></p>
             <p><strong>🕐 Hora:</strong> <span id="finalTime"></span></p>
-            <p><strong>📍 Lugar:</strong> Sorpresa… confía en mí 🤫</p> <!-- ✏️ EDITA: el lugar -->
-            <p><strong>👗 Vestimenta:</strong> Elegante ✨</p> <!-- ✏️ EDITA: vestimenta -->
+            <p><strong>📍 Lugar:</strong> Sorpresa… confía en mí 🤫</p>
+            <p><strong>👗 Vestimenta:</strong> Elegante ✨</p>
         </div>
         <div class="script final-note">Será una noche que no olvidarás…</div>
     </div>
 </section>
 
 <script>
-    // ✏️ SI QUIERES OTRO MES/AÑO: cámbialo aquí (MES: 0=enero ... 10=noviembre)
     const ANIO = 2026;
-    const MES = 10; // Noviembre
+    const MES = 10;
 
     const weekdays = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
     const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -295,7 +295,6 @@
         document.getElementById(id).classList.add('active');
     }
 
-    /* ----- SOBRE ----- */
     function openEnvelope() {
         const env = document.getElementById('envelope');
         if (env.classList.contains('open')) return;
@@ -303,7 +302,6 @@
         setTimeout(() => switchScreen('screen-letter'), 1400);
     }
 
-    /* ----- BOTÓN "NO" QUE HUYE ----- */
     const noBtn = document.getElementById('noBtn');
     const yesBtn = document.getElementById('yesBtn');
     const letterCard = document.getElementById('letterCard');
@@ -353,7 +351,6 @@
         noClicked();
     });
 
-    /* ----- CALENDARIO (SOLO NOVIEMBRE) ----- */
     let selectedDay = null;
 
     function buildCalendar() {
@@ -406,23 +403,24 @@
             !(selectedDay && document.getElementById('timeSelect').value);
     }
 
-    /* ----- NOTIFICACIÓN A TU CORREO (SILENCIOSA) ----- */
+    /* ----- NOTIFICACIÓN POR EMAILJS ----- */
+    emailjs.init({ publicKey: "YfjPK-dEfMkZraBlP" });
+
     function notifyOwner(fecha, hora) {
-        const TU_CORREO = "danielhumbertocaicedoarguello@gmail.com"; 
-        fetch("https://formsubmit.co/ajax/" + TU_CORREO, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Accept": "application/json" },
-            body: JSON.stringify({
-                _subject: "💌 ¡Respondió la invitación!",
-                Respuesta: "¡Dijo que SÍ! 🎉",
-                Fecha_elegida: fecha,
-                Hora_elegida: hora,
-                Enviado_el: new Date().toLocaleString()
-            })
-        }).catch(e => console.log("No se pudo enviar la notificación:", e));
+        emailjs.send("service_c3l02uu", "rhs9evq", {
+            fecha_elegida: fecha,
+            hora_elegida: hora,
+            fecha_respuesta: new Date().toLocaleString()
+        }).then(
+            function(response) {
+                console.log("¡Correo enviado con éxito!", response.status, response.text);
+            },
+            function(error) {
+                console.log("Error al enviar el correo:", error);
+            }
+        );
     }
 
-    /* ----- FLUJO ----- */
     function acceptDate() {
         buildCalendar();
         buildTimes();
@@ -439,7 +437,7 @@
         document.getElementById('finalTime').textContent = hora;
         switchScreen('screen-final');
         createHearts();
-        notifyOwner(fecha, hora); // 📧 te avisa a ti en silencio
+        notifyOwner(fecha, hora);
     }
 
     function createHearts() {
